@@ -13,6 +13,7 @@ export const Room: React.VFC<{ roomId: string }> = ({ roomId }) => {
   const [localStream, setLocalStream] = React.useState<MediaStream>();
   const [room, setRoom] = React.useState<SfuRoom>();
   const localVideoRef = React.useRef<HTMLVideoElement>(null);
+  const [isStarted, setIsStarted] = React.useState(false);
   React.useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
@@ -61,6 +62,7 @@ export const Room: React.VFC<{ roomId: string }> = ({ roomId }) => {
       });
       setRoom(tmpRoom);
     }
+    setIsStarted((prev) => !prev);
   };
   const onEnd = () => {
     if (room) {
@@ -72,6 +74,7 @@ export const Room: React.VFC<{ roomId: string }> = ({ roomId }) => {
         });
       });
     }
+    setIsStarted((prev) => !prev);
   };
   const castVideo = () => {
     return remoteVideo.map((video) => {
@@ -80,8 +83,12 @@ export const Room: React.VFC<{ roomId: string }> = ({ roomId }) => {
   };
   return (
     <div>
-      <button onClick={() => onStart()}>start</button>
-      <button onClick={() => onEnd()}>end</button>
+      <button onClick={() => onStart()} disabled={isStarted}>
+        start
+      </button>
+      <button onClick={() => onEnd()} disabled={!isStarted}>
+        end
+      </button>
       <video ref={localVideoRef} playsInline></video>
       {castVideo()}
     </div>
